@@ -5,6 +5,9 @@ from livekit.agents import JobContext, AgentServer,AgentSession, Agent, room_io,
 from livekit.plugins import noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 import time
+import json
+from datetime import datetime
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +22,25 @@ class Assistant(Agent):
 
 server = AgentServer()
 
+async def on_session_end(ctx: JobContext) -> None:
+    logger.info(f"Session in room {ctx.room.name} has ended. Generating report...")
+    report = ctx.make_session_report()
+    report_dict = report.to_dict()
 
-@server.rtc_session(agent_name="my-agent")
+    current_date = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Create reports directory in the project root
+    reports_dir = Path(__file__).parent / "reports"
+    reports_dir.mkdir(exist_ok=True)
+    
+    filename = reports_dir / f"session_report_{ctx.room.name}_{current_date}.json"
+
+    with open(filename, 'w') as f:
+        json.dump(report_dict, f, indent=2)
+
+    logger.info(f"Session report for {ctx.room.name} saved to {filename}")
+
+@server.rtc_session(agent_name="my-agent", on_session_end=on_session_end)
 async def entrypoint(ctx: JobContext):
 
     session = AgentSession(
@@ -82,6 +102,7 @@ async def entrypoint(ctx: JobContext):
                 noise_cancellation=lambda params: noise_cancellation.BVCTelephony() if params.participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_SIP else noise_cancellation.BVC(),
             ),
         ),
+        record=False,  # Enable recording to capture audio for metrics analysis  
     )
 
     await session.generate_reply(
