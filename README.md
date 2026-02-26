@@ -143,9 +143,10 @@ Modify the `AgentSession` configuration to change AI providers:
 
 ## Session Reports and Metrics
 
-The `agent-with-metrics-collection.py` automatically generates session reports and collects metrics:
+The `agent-with-metrics-collection.py` automatically generates session reports and collects metrics stored in a **local `reports/` folder**:
 
-- **Session Reports**: Generated at the end of each session and saved to the `reports/` directory
+- **Session Reports**: Generated at the end of each session and saved to `./reports/` directory as JSON files
+- **Report Filename Format**: `session_report_{room_name}_{timestamp}.json`
 - **Metrics Collection**: Real-time tracking of:
   - STT/LLM/TTS latencies
   - Token usage and costs
@@ -153,7 +154,7 @@ The `agent-with-metrics-collection.py` automatically generates session reports a
   - Time to first audio response
   - End-of-utterance (EOU) metrics
 
-Reports are saved as JSON files with the format: `session_report_{room_name}_{timestamp}.json`
+All session data is stored locally in the `reports/` folder for easy access and analysis. Reports persist after session ends for historical tracking and performance analysis.
 
 ## Troubleshooting
 
