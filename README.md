@@ -16,6 +16,7 @@ A collection of real-time voice AI agents built with Python and LiveKit. These a
 - **`agent.py`** - Basic voice agent with OpenAI GPT-4 and Cartesia TTS
 - **`agent-with-fallback-adapter.py`** - Enhanced agent with fallback providers (Deepgram/AssemblyAI for STT, Google Gemini fallback for LLM, Google TTS fallback)
 - **`agent-with-metrics-collection.py`** - Production-ready agent with metrics collection, performance monitoring, and usage tracking
+- **`agent-with-tools-and-mcp.py`** - Advanced agent with custom function tools, MCP (Model Context Protocol) server integration for LiveKit documentation search, and real-time weather lookup
 
 ## Prerequisites
 
@@ -93,6 +94,9 @@ uv run agent-with-fallback-adapter.py console
 
 # Agent with metrics collection
 uv run agent-with-metrics-collection.py console
+
+# Agent with tools and MCP servers
+uv run agent-with-tools-and-mcp.py console
 ```
 
 ### Connect to LiveKit Cloud
@@ -140,6 +144,20 @@ Modify the `AgentSession` configuration to change AI providers:
 - **STT**: `deepgram/nova-3:multi`, `assemblyai/assemblyai-1:multi`
 - **LLM**: `openai/gpt-4.1-mini`, `google/gemini-2.5-flash`
 - **TTS**: `cartesia/sonic-3:...`, `google/tts:multi`
+
+## Tools and MCP Integration
+
+The `agent-with-tools-and-mcp.py` includes advanced capabilities:
+
+### Function Tools
+- **`get_current_weather`**: Look up real-time weather for any location using Open-Meteo API (no API key required)
+
+### MCP Servers
+- **LiveKit Documentation Server**: Provides intelligent search and retrieval of LiveKit documentation to answer questions about features, APIs, and implementation patterns
+
+The agent automatically uses these tools when needed based on user queries. For example:
+- "What's the weather in San Francisco?" → Uses the weather tool
+- "How do I implement real-time translation?" → Queries the LiveKit docs MCP server
 
 ## Session Reports and Metrics
 
