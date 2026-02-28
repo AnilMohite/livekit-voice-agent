@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 import httpx
 from livekit.agents import function_tool, RunContext, ToolError
+from livekit.agents import mcp
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class Assistant(Agent):
         super().__init__(
             instructions="You are a helpful voice AI assistant."
             "You can also look up the current weather for any location using the get_current_weather tool."
+            "You can also answer the question about livekit's documentation. when user asks about livekit features, apis, or how to build something, use the docs search to find accurate information"
         )
     
     @function_tool()
@@ -103,7 +105,8 @@ async def entrypoint(ctx: JobContext):
         ),
         vad=silero.VAD.load(),
         turn_detection=MultilingualModel(),
-        preemptive_generation=True,  # Enable preemptive generation to reduce latency   
+        preemptive_generation=True,  # Enable preemptive generation to reduce latency  
+        mcp_servers=[mcp.MCPServerHTTP(url="https://docs.livekit.io/mcp")],
     )
 
     # Set up metrics collection after session creation so we have access to session ID in the metrics callbacks    
